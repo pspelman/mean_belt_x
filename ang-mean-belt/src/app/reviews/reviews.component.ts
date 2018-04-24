@@ -78,7 +78,7 @@ export class ReviewsComponent implements OnInit {
   validateForm() {
     console.log(`checking form for valid inputs`,);
     if (this.new_review.user_name.length < 3 ||
-      this.new_review.review_text.length < 3 {
+      this.new_review.review_text.length < 3 ){
       console.log(`invalid form data`,);
       return true;
     } else {
