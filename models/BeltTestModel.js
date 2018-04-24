@@ -34,7 +34,7 @@ skillSchema.pre('save', function (next) {
 
 //Instruction says use only ONE schema
 var PetSchema = new mongoose.Schema({
-    pet_name: {
+    belt_test_model_name: {
         type: String,
         required: true,
         minlength: 3,

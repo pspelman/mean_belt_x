@@ -265,6 +265,23 @@ var DataManagerService = /** @class */ (function () {
     function DataManagerService(_http) {
         this._http = _http;
     }
+    //TODO: View Request
+    DataManagerService.prototype.getAllOffers = function () {
+        //todo: update server file to contain this route, which will return a list of all active donation offers
+        return this._http.get('/offers');
+    };
+    //TODO: Create Request
+    DataManagerService.prototype.createDonation = function (new_donation_offer) {
+        return this._http.post('/donate', new_donation_offer);
+    };
+    //TODO: Update Request
+    //TODO: Delete Request
+    DataManagerService.prototype.getAllThings = function () {
+        return this._http.get('/belt_test_models');
+    };
+    DataManagerService.prototype.getBeltTestModelById = function (id) {
+        return this._http.get("belt_test_models/" + id);
+    };
     DataManagerService = __decorate([
         core_1.Injectable(),
         __metadata("design:paramtypes", [http_1.HttpClient])
@@ -356,10 +373,41 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+var data_manager_service_1 = __webpack_require__("./src/app/data-manager.service.ts");
+var router_1 = __webpack_require__("./node_modules/@angular/router/esm5/router.js");
 var EditComponent = /** @class */ (function () {
-    function EditComponent() {
+    function EditComponent(_http, router, activatedRoute) {
+        var _this = this;
+        this._http = _http;
+        this.router = router;
+        this.activatedRoute = activatedRoute;
+        this.skill_one = "";
+        this.skill_two = "";
+        this.skill_three = "";
+        this.activatedRoute.params.subscribe(function (params) {
+            _this.belt_test_model_id = params['belt_test_model_id'];
+            console.log("Grabbed the belt_test_model id: ", _this.belt_test_model_id);
+        });
     }
     EditComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        //get the requested belt_test_model
+        var observable = this._http.getBeltTestModelById(this.belt_test_model_id);
+        observable.subscribe(function (data) {
+            console.log("Query for specific pet returned: ", data);
+            _this.belt_test_model_data = data['pet'][0];
+            _this.selected_belt_test_model.id = data['pet'][0]._id;
+            _this.selected_belt_test_model.name = data['pet'][0].pet_name;
+            _this.selected_belt_test_model.type = data['pet'][0].type;
+            _this.selected_belt_test_model.description = data['pet'][0].description;
+            // this.selected_belt_test_model.skills[0] = data['pet'][0].skills[0].skill;
+            // this.selected_belt_test_model.skills[1] = data['pet'][0].skills[1].skill;
+            // this.selected_belt_test_model.skills[2] = data['pet'][0].skills[2].skill;
+        });
+    };
+    EditComponent.prototype.logChange = function (change_item) {
+        console.log("Item changed: ", change_item);
+        console.log("ViewModel: ", change_item['viewModel']);
     };
     EditComponent = __decorate([
         core_1.Component({
@@ -367,7 +415,7 @@ var EditComponent = /** @class */ (function () {
             template: __webpack_require__("./src/app/edit/edit.component.html"),
             styles: [__webpack_require__("./src/app/edit/edit.component.css")]
         }),
-        __metadata("design:paramtypes", [])
+        __metadata("design:paramtypes", [data_manager_service_1.DataManagerService, router_1.Router, router_1.ActivatedRoute])
     ], EditComponent);
     return EditComponent;
 }());
@@ -386,7 +434,7 @@ module.exports = "/*!\n * Bootstrap v4.1.0 (https://getbootstrap.com/)\n * Copyr
 /***/ "./src/app/home/home.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<input type=\"button\" name=\"details\" value=\"Register pet\" class=\"btn\" [routerLink]=\"['../create']\" />\n\n\n\n<!--<input type=\"button\" name=\"details\" class=\"btn\" [routerLink]=\"['../details/'+pet._id]\" value=\"Details\" ><br/>-->\n<input type=\"button\" name=\"details\" class=\"btn\" [routerLink]=\"['../details/']\" value=\"Details\" ><br/>\n<!--<input type=\"button\" name=\"edit\" class=\"btn\" [routerLink]=\"['../edit/'+pet._id]\" value=\"Edit\" ><br/>-->\n<input type=\"button\" name=\"edit\" class=\"btn\" [routerLink]=\"['../edit/']\" value=\"Edit\" ><br/>\n\n<div style=\"text-align:center\">\n  <h1>\nHome component\n  </h1>\n</div>\n"
+module.exports = "<input type=\"button\" name=\"details\" value=\"Create A Thing\" class=\"btn\" [routerLink]=\"['../create']\" />\n\n\n\n<!--<input type=\"button\" name=\"details\" class=\"btn\" [routerLink]=\"['../details/'+pet._id]\" value=\"Details\" ><br/>-->\n<input type=\"button\" name=\"details\" class=\"btn\" [routerLink]=\"['../details/']\" value=\"Details\" ><br/>\n<!--<input type=\"button\" name=\"edit\" class=\"btn\" [routerLink]=\"['../edit/'+pet._id]\" value=\"Edit\" ><br/>-->\n<input type=\"button\" name=\"edit\" class=\"btn\" [routerLink]=\"['../edit/']\" value=\"Edit\" ><br/>\n\n<div style=\"text-align:center\">\n  <h1>\nHome component\n  </h1>\n\n\n  <div *ngIf=\"list_of_all_the_things\">\n    <table class=\"table\">\n      <thead>\n      <td>\n        Name\n      </td>\n      <td>\n        type\n      </td>\n      <td>\n        description\n      </td>\n      <td>\n        action\n      </td>\n      </thead>\n      <tr *ngFor=\"let belt_test_model of list_of_all_the_things\">\n        <td>\n          {{belt_test_model.belt_test_model_name}}\n        </td>\n        <td>\n          {{belt_test_model.type}}\n        </td>\n        <td>\n          {{belt_test_model.description}}\n        </td>\n        <td>\n          <input type=\"button\" name=\"details\" class=\"btn\" [routerLink]=\"['../details/'+belt_test_model._id]\" value=\"Details\" ><br/>\n          <input type=\"button\" name=\"edit\" class=\"btn\" [routerLink]=\"['../edit/'+belt_test_model._id]\" value=\"Edit\" ><br/>\n          <br/>\n          {{belt_test_model._id}}\n        </td>\n      </tr>\n\n\n    </table>\n\n\n</div>\n"
 
 /***/ }),
 
@@ -406,10 +454,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
+var data_manager_service_1 = __webpack_require__("./src/app/data-manager.service.ts");
+var router_1 = __webpack_require__("./node_modules/@angular/router/esm5/router.js");
 var HomeComponent = /** @class */ (function () {
-    function HomeComponent() {
+    function HomeComponent(_http, router) {
+        this._http = _http;
+        this.router = router;
     }
     HomeComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        //TODO: get all the things
+        var observable = this._http.getAllThings();
+        observable.subscribe(function (data) {
+            console.log("recieved ALL THINGS DATA: ", data);
+            _this.list_of_all_the_things = data['belt_test_models'];
+        });
     };
     HomeComponent = __decorate([
         core_1.Component({
@@ -417,7 +476,7 @@ var HomeComponent = /** @class */ (function () {
             template: __webpack_require__("./src/app/home/home.component.html"),
             styles: [__webpack_require__("./src/app/home/home.component.css")]
         }),
-        __metadata("design:paramtypes", [])
+        __metadata("design:paramtypes", [data_manager_service_1.DataManagerService, router_1.Router])
     ], HomeComponent);
     return HomeComponent;
 }());

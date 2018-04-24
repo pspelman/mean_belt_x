@@ -1,4 +1,4 @@
-<input type="button" name="details" value="Register pet" class="btn" [routerLink]="['../create']" />
+<input type="button" name="details" value="Create A Thing" class="btn" [routerLink]="['../create']" />
 
 
 
@@ -11,4 +11,44 @@
   <h1>
 Home component
   </h1>
+
+
+  <div *ngIf="list_of_all_the_things">
+    <table class="table">
+      <thead>
+      <td>
+        Name
+      </td>
+      <td>
+        type
+      </td>
+      <td>
+        description
+      </td>
+      <td>
+        action
+      </td>
+      </thead>
+      <tr *ngFor="let belt_test_model of list_of_all_the_things">
+        <td>
+          {{belt_test_model.belt_test_model_name}}
+        </td>
+        <td>
+          {{belt_test_model.type}}
+        </td>
+        <td>
+          {{belt_test_model.description}}
+        </td>
+        <td>
+          <input type="button" name="details" class="btn" [routerLink]="['../details/'+belt_test_model._id]" value="Details" ><br/>
+          <input type="button" name="edit" class="btn" [routerLink]="['../edit/'+belt_test_model._id]" value="Edit" ><br/>
+          <br/>
+          {{belt_test_model._id}}
+        </td>
+      </tr>
+
+
+    </table>
+
+
 </div>
