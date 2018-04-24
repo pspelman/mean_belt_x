@@ -1,40 +1,62 @@
-import { Component, OnInit } from '@angular/core';
-import {DataManagerService} from "../data-manager.service";
+import {Component, Injectable, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {RestaurantModel} from "../data-manager.service";
+import {DataManagerService, RestaurantModel} from "../data-manager.service";
+
+
+
+
+@Injectable()
+class Review {
+  user_name: string;
+  review_text: string;
+  stars: number;
+
+  constructor(user_name = "", review_text = "", stars = null) {
+    this.user_name = user_name;
+    this.review_text = review_text;
+    this.stars = stars;
+  }
+
+}
+
 
 
 @Component({
-  selector: 'app-edit',
-  templateUrl: './edit.component.html',
-  styleUrls: ['./edit.component.css']
+  selector: 'app-reviews',
+  templateUrl: './reviews.component.html',
+  styleUrls: ['./reviews.component.css']
 })
-export class EditComponent implements OnInit {
-  restaurant_model: {
-    id: null,
-    name: null,
-    type: null,
-    description: null,
-    // skills: [this.skill_one, this.skill_two, this.skill_three],
-  };
 
-  restaurant_data: any;
+export class ReviewsComponent implements OnInit {
+  // new_review: any;
   restaurant_id: any;
+
+  new_review = new Review();
+  currentRate = 1;
+
+  star_select = [1, 2, 3, 4, 5];
+
+  selected_restaurant = new RestaurantModel();
+  backend_errors: any;
+  // stars_select = [
+  //   {'value':1},
+  //   {'value':2},
+  //   {'value':3},
+  //   {'value':4},
+  //   {'value':5},
+  //   ];
 
   constructor(private _http: DataManagerService, private router: Router, private activatedRoute: ActivatedRoute) {
     this.activatedRoute.params.subscribe(params => {
       this.restaurant_id = params['restaurant_id'];
-      console.log(`Grabbed the restaurant id: `,this.restaurant_id);
+      console.log(`got the id: `, this.restaurant_id);
     });
 
   }
 
-  backend_errors: any;
-
-  selected_restaurant = new RestaurantModel();
-
   ngOnInit() {
     //get the requested restaurant
+
     let observable = this._http.getRestaurantById(this.restaurant_id);
     observable.subscribe(data => {
       console.log(`Query for specific restaurant returned: `, data);
@@ -48,6 +70,21 @@ export class EditComponent implements OnInit {
       // this.selected_restaurant.description = data['restaurant'][0].description;
     })
 
+
+  }
+
+
+
+  validateForm() {
+    console.log(`checking form for valid inputs`,);
+    if (this.new_review.user_name.length < 3 ||
+      this.new_review.review_text.length < 3 {
+      console.log(`invalid form data`,);
+      return true;
+    } else {
+      console.log(`enough data to send`,);
+      return false;
+    }
   }
 
   navHome() {
@@ -60,33 +97,15 @@ export class EditComponent implements OnInit {
     console.log(`ViewModel: `,change_item['viewModel']);
   }
 
-  validateForm() {
-    console.log(`checking form for valid inputs`,);
-    if (this.selected_restaurant.restaurant_name.length < 3 ||
-      this.selected_restaurant.description.length < 3 ||
-      this.selected_restaurant.cuisine_type.length < 3) {
-      console.log(`name`,this.selected_restaurant.restaurant_name.length);
-      console.log(`desc`,this.selected_restaurant.description.length);
-      console.log(`cuisine`,this.selected_restaurant.cuisine_type.length);
-
-      console.log(`invalid form data`,);
-      return true;
-    } else {
-      console.log(`enough data to send`,);
-      return false;
-    }
-  }
-
-
   //todo: make request to DB to update restaurant
-  updateSelectedRestaurant() {
+  createNewReview() {
     this.backend_errors = null;
     let router = this.router;
     if (!this.validateForm()) {
       console.log(`trying to update restaurant`,);
-      let observable = this._http.updateRestaurantInfo(this.restaurant_id, this.selected_restaurant);
+      let observable = this._http.createRestaurantReview(this.restaurant_id, this.new_review);
       observable.subscribe(response => {
-        console.log(`response from server for UPDATE restaurant: `, response);
+        console.log(`response from server for UPDATE review: `, response);
         if (!response['errs'].has_errors) {
           router.navigateByUrl('/home');
         } else if (response['errs'].has_errors) {
@@ -99,6 +118,19 @@ export class EditComponent implements OnInit {
       //this means something was wrong with the form
       alert('you must complete the form before you can submit it')
     }
+  }
+  //
+  // createNewReview(id) {
+  //   console.log(`trying to submit review for restau: ${id}`,);
+  //   let review_request = this._http.createRestaurantReview(id, this.new_review);
+  //   review_request.subscribe(response => {
+  //
+  //   });
+  //
+  // }
+
+  validateReview() {
+
   }
 
 }

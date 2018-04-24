@@ -1,4 +1,79 @@
 <input type="button" name="home" value="Home" class="btn" [routerLink]="['../home']" />
-<p>
-  edit works!
-</p>
+<h3>Edit Restaurant Details</h3>
+<hr><form (submit)="updateSelectedRestaurant()" onsubmit="return false" name="selected_restaurant_form" >
+  <div class="form-group">
+    <label for="restaurant_name">
+      Restaurant Name:
+    </label>
+    <input [(ngModel)]="selected_restaurant.restaurant_name"
+           required
+           minlength="3"
+           name="restaurant_name"
+           #restaurant_name="ngModel"
+           (change)="logChange(restaurant_name)"
+           id="restaurant_name"
+           type="text"
+           class="form-control" >
+
+    <div class="alert alert-danger" *ngIf="(!restaurant_name.valid && !restaurant_name.untouched && restaurant_name.dirty);" >
+      <div *ngIf="restaurant_name.errors.required">Blank restaurant names are not allowed</div>
+      <div *ngIf="restaurant_name.errors.minlength">Restaurant names must contain more than {{ restaurant_name.errors.minlength.requiredLength }} letters</div>
+    </div>
+
+    <br/>
+    <label for="cuisine_type">
+      Type:
+    </label>
+    <input [(ngModel)]="selected_restaurant.cuisine_type"
+           required
+           minlength="3"
+           name="cuisine_type"
+           #cuisine_type="ngModel"
+           id="cuisine_type"
+           type="text"
+           class="form-control"
+           (change)="logChange(cuisine_type)">
+    <!--front-end validation here-->
+    <div class="alert alert-danger" *ngIf="(!cuisine_type.valid && !cuisine_type.untouched && cuisine_type.dirty);" >
+      <div *ngIf="cuisine_type.errors.required">Cuisine type cannot be blank</div>
+      <div *ngIf="cuisine_type.errors.minlength">Cuisine type must be more than {{ cuisine_type.errors.minlength.requiredLength }} letters</div>
+    </div>
+
+
+    <br/>
+    <label for="description">
+      Description:
+    </label>
+    <input [(ngModel)]="selected_restaurant.description"
+           required
+           minlength="3"
+           name="description"
+           #description="ngModel"
+           id="description"
+           type="text"
+           class="form-control"
+           (change)="logChange(description)">
+    <br/>
+    <div class="alert alert-danger" *ngIf="(!description.valid && !description.untouched && description.dirty);" >
+      <div *ngIf="description.errors.required">Blank descriptions are not allowed</div>
+      <div *ngIf="description.errors.minlength">Descriptions must contain more than {{ description.errors.minlength.requiredLength }} letters</div>
+    </div>
+  </div>
+
+
+  <button type="submit" name="submit">Submit</button>
+  <button type="reset" name="reset" (click)="navHome()">Cancel new registration</button>
+
+</form>
+
+
+
+<div *ngIf="backend_errors" class="alert alert-danger">
+  <span class="font-weight-bold">There were errors with the restaurant registration:</span>
+  <ul>
+    <li *ngFor="let err of backend_errors">
+      {{err}}
+    </li>
+  </ul>
+</div>
+

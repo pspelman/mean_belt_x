@@ -1,1 +1,36 @@
 @import '~bootstrap/dist/css/bootstrap.css';
+.app_container {
+  padding: 5%;
+  background-color: rgba(59, 120, 126, 0.51);
+
+  width: 90vw;
+  height: 100vh;
+  margin: 10px auto;
+}
+
+
+
+
+button .btn {
+  background-color: #cda3a2;
+  border: 1px solid black;
+}
+.form-control.ng-invalid.ng-touched.ng-dirty {
+  border: 2px solid red;
+}
+
+tr:nth-child(even) {background: rgba(204, 204, 204, 0.24)
+}
+tr:nth-child(odd) {background: rgba(255, 255, 255, 0.05)
+}
+
+.table-btn btn{
+  dispaly: inline;
+
+}
+
+/*.table[_ngcontent-c1] th[_ngcontent-c1], .table[_ngcontent-c1] td[_ngcontent-c1]*/
+
+.table[_ngcontent-c3] th[_ngcontent-c3], .table[_ngcontent-c3] td[_ngcontent-c3]{
+  width: 10%;
+}

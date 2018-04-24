@@ -1,0 +1,91 @@
+<input type="button" name="home" value="Home" class="btn" [routerLink]="['../../home']" />
+<h3>Add your review of {{selected_restaurant.restaurant_name}}</h3>
+<hr>
+<form (submit)="createNewReview(selected_restaurant._id)" onsubmit="return false" name="selected_restaurant_form" >
+  <div class="form-group">
+    <label for="user_name">
+      Your Name:
+    </label>
+    <input [(ngModel)]="new_review.user_name"
+           required
+           minlength="3"
+           name="user_name"
+           #user_name="ngModel"
+           (change)="logChange(user_name)"
+           id="user_name"
+           type="text"
+           class="form-control" >
+
+    <div class="alert alert-danger" *ngIf="(!user_name.valid && !user_name.untouched && user_name.dirty);" >
+      <div *ngIf="user_name.errors.required">Blank user names are not allowed</div>
+      <div *ngIf="user_name.errors.minlength">User names must contain more than {{ user_name.errors.minlength.requiredLength }} letters</div>
+    </div>
+
+    <br/>
+
+    <label for="star_rating">
+    Rating:
+    </label>
+
+    <select [(ngModel)]="new_review.stars" id="star_rating" name="star_rating">
+      <!--<option value="" disabled selected>>select a star</option>-->
+      <option [value]="star_select[0]">{{star_select[0]}}</option>
+      <option [value]="star_select[1]">{{star_select[1]}}</option>
+      <option [value]="star_select[2]">{{star_select[2]}}</option>
+      <option [value]="star_select[3]">{{star_select[3]}}</option>
+      <option [value]="star_select[4]">{{star_select[4]}}</option>
+    </select>
+
+    <!--<ngb-rating [(rate)]="currentRate"></ngb-rating>-->
+    <!--<hr>-->
+    <!--<pre>Rate: <b>{{currentRate}}</b></pre>-->
+
+    <!--<input [(ngModel)]="new_review.stars"-->
+           <!--required-->
+           <!--name="stars"-->
+           <!--#stars="ngModel"-->
+           <!--id="stars"-->
+           <!--type="number"-->
+           <!--min=1-->
+           <!--max=5-->
+           <!--class="form-control"-->
+           <!--(change)="logChange(stars)">-->
+    <!--<div class="alert alert-danger" *ngIf="(!stars.valid && !stars.untouched && stars.dirty);" >-->
+ <!--Stars can be between 1-5-->
+      <!--<span class="alert alert-danger" *ngIf="backend_errors">Errors from database</span>-->
+    <!--</div>-->
+
+    <br/>
+    <label for="review_text">
+      Review:
+    </label>
+    <input [(ngModel)]="new_review.review_text"
+           required
+           minlength="3"
+           name="review_text"
+           #review_text="ngModel"
+           id="review_text"
+           type="text"
+           class="form-control"
+           (change)="logChange(review_text)">
+    <br/>
+    <div class="alert alert-danger" *ngIf="(!review_text.valid && !review_text.untouched && review_text.dirty);" >
+      <div *ngIf="review_text.errors.required">Blank reviews are not allowed</div>
+      <div *ngIf="review_text.errors.minlength">Reviews must contain more than {{ review_text.errors.minlength.requiredLength }} letters</div>
+    </div>
+
+  </div>
+  <button type="submit" name="submit">Submit</button>
+  <button type="reset" name="reset" (click)="navHome()">Cancel new registration</button>
+
+</form>
+
+
+
+<div *ngIf="error_list">
+  <p>There were errors with the restaurant registration:</p>
+  <div *ngFor="let err of error_list">
+    {{err}}
+  </div>
+</div>
+

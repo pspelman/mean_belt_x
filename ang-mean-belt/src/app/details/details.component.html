@@ -1,4 +1,29 @@
-<input type="button" name="main" class="btn" [routerLink]="['../home']" value="Main">
-<p>
-  details works!
-</p>
+<input type="button" name="main" class="btn" [routerLink]="['../../home']" value="Main">
+<h4>Reviews for {{selected_restaurant.restaurant_name}}</h4>
+<br/>
+
+
+<button name="edit" class="table-btn" [routerLink]="['../../reviews/'+selected_restaurant._id]" value="Review" >Write Review</button>
+
+<div>
+
+</div>
+<table *ngIf="reviews" class="table-striped reviews_table">
+  <thead>
+    <td>User</td>
+    <td>Stars</td>
+    <td>Review</td>
+  </thead>
+  <tr *ngFor="let review of reviews">
+    <td>{{review.user_name}}: </td>
+    <td>{{review.stars}}</td>
+    <td>{{review.review_text}}</td>
+    <!--<td>{{sample_review.user_name}}-->
+    <!--</td>-->
+    <!--<td>{{sample_review.stars}}-->
+    <!--</td>-->
+    <!--<td>{{sample_review.review_text}}-->
+    <!--</td>-->
+  </tr>
+</table>
+

@@ -1,15 +1,15 @@
-<input type="button" name="details" value="Create A Thing" class="btn" [routerLink]="['../create']" />
+<input type="button" name="details" value="Create A Restaurant" class="btn" [routerLink]="['../create']" />
 
 
 
-<!--<input type="button" name="details" class="btn" [routerLink]="['../details/'+pet._id]" value="Details" ><br/>-->
-<input type="button" name="details" class="btn" [routerLink]="['../details/']" value="Details" ><br/>
-<!--<input type="button" name="edit" class="btn" [routerLink]="['../edit/'+pet._id]" value="Edit" ><br/>-->
-<input type="button" name="edit" class="btn" [routerLink]="['../edit/']" value="Edit" ><br/>
+<!--<input type="button" name="details" class="btn" [routerLink]="['../details/'+restaurant._id]" value="Details" ><br/>-->
+<!--<input type="button" name="details" class="btn" [routerLink]="['../details/']" value="Details" ><br/>-->
+<!--<input type="button" name="edit" class="btn" [routerLink]="['../edit/'+restaurant._id]" value="Edit" ><br/>-->
+<!--<input type="button" name="edit" class="btn" [routerLink]="['../edit/']" value="Edit" ><br/>-->
 
 <div style="text-align:center">
   <h1>
-Home component
+Restaurants
   </h1>
 
 
@@ -29,21 +29,24 @@ Home component
         action
       </td>
       </thead>
-      <tr *ngFor="let belt_test_model of list_of_all_the_things">
+      <tr *ngFor="let restaurant of list_of_all_the_things">
         <td>
-          {{belt_test_model.belt_test_model_name}}
+          {{restaurant.restaurant_name}}
         </td>
         <td>
-          {{belt_test_model.type}}
+          {{restaurant.cuisine_type}}
         </td>
         <td>
-          {{belt_test_model.description}}
+          {{restaurant.description}}
         </td>
         <td>
-          <input type="button" name="details" class="btn" [routerLink]="['../details/'+belt_test_model._id]" value="Details" ><br/>
-          <input type="button" name="edit" class="btn" [routerLink]="['../edit/'+belt_test_model._id]" value="Edit" ><br/>
+          <button name="details" class="table-btn" [routerLink]="['../details/'+restaurant._id]" value="Read Reviews" >Details</button>
+          <button name="edit" class="table-btn" [routerLink]="['../edit/'+restaurant._id]" value="Update" >Update</button>
+          <button name="delete" class="table-btn" (click)="deleteRestaurant(restaurant._id)" value="Delete" >Delete</button>
+          <!--<input type="button" name="details" class="table-btn btn" [routerLink]="['../details/'+restaurant._id]" value="Details" ><br/>-->
+          <!--<input type="button" name="edit" class="table-btn btn" [routerLink]="['../edit/'+restaurant._id]" value="Edit" ><br/>-->
           <br/>
-          {{belt_test_model._id}}
+          <!--{{restaurant._id}}-->
         </td>
       </tr>
 

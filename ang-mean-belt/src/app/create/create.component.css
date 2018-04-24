@@ -1,1 +1,5 @@
 @import "../app.component.css";
+.form-control[_ngcontent-c2]{
+  width: 50%;
+  margin-left: 5%;
+}

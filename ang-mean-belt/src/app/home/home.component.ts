@@ -10,6 +10,7 @@ import {Router, ActivatedRoute} from "@angular/router";
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
+  private backend_errors: any;
 
   constructor(private _http: DataManagerService, private router: Router) { }
 
@@ -20,10 +21,10 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
 
     //TODO: get all the things
-    let observable = this._http.getAllThings();
+    let observable = this._http.getAllRestaurants();
     observable.subscribe(data => {
       console.log(`recieved ALL THINGS DATA: `, data);
-      this.list_of_all_the_things = data['belt_test_models'];
+      this.list_of_all_the_things = data['restaurants'];
 
     });
 
@@ -31,5 +32,20 @@ export class HomeComponent implements OnInit {
   }
 
 
+  deleteRestaurant(id: any) {
+    console.log(`clicked delete...`,);
+    let deletion = this._http.deleteRestaurant(id);
+    deletion.subscribe(response => {
+      console.log(`server responded to delete request: `, response);
+      if (!response['errs'].has_errors) {
+        console.log(`no errors!`,);
+        this.router.navigateByUrl('/home');
 
+      } else if (response['errs'].has_errors) {
+        this.backend_errors = response['errs'].error_list;
+        console.log(`got errors: `,this.backend_errors);
+      }
+    });
+
+  }
 }

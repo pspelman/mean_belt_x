@@ -2,15 +2,15 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 
-var BeltTestModel = mongoose.model('BeltTestModel');
-var BeltTestModels = mongoose.model('BeltTestModel');
+var RestaurantModel = mongoose.model('RestaurantModel');
+var RestaurantModels = mongoose.model('RestaurantModel');
 
 mongoose.Promise = global.Promise;
 
 class errorObject {
     constructor(){
         this.has_errors = false;
-        this.err_list = [];
+        this.error_list = [];
     }
 }
 
@@ -20,183 +20,209 @@ router.get('/', function (req, res) {
 });
 
 
-//DONE: router.get('/', function(req, res){}
-//get all belt_test_models
-router.get('/belt_test_models', function (req, res) {
+//get all restaurants
+router.get('/restaurants', function (req, res) {
     let errs = new errorObject();
     let err_holder = [];
-    console.log(`arrived at GET belt_test_models...getting all belt_test_models`,);
-    BeltTestModels.find({}, function (err, belt_test_models) {
+    console.log(`arrived at GET restaurants...getting all restaurants`,);
+    RestaurantModels.find({}, function (err, restaurants) {
         if(err){
             err_holder.push(err.message);
             errs.has_errors = true;
-            errs.err_list.push(err.message);
-            console.log(`there was an error looking up belt_test_models`, err);
+            errs.error_list.push(err.message);
+            console.log(`there was an error looking up restaurants`, err);
             res.json({'message':'there was an error', 'errors': err.message, 'err_holder':err_holder, 'errs':errs})
         } else {
-            res.json({'message': 'successfully retrieved belt_test_models', 'belt_test_models': belt_test_models, 'errs':errs});
+            res.json({'message': 'successfully retrieved restaurants', 'restaurants': restaurants, 'errs':errs});
         }
     });
 });
 
 
-//DONE: router.get('/belt_test_models/:id', function(req, res){}
+//COMPLETE: REVIEW router.get('/restaurants/:id', function(req, res){}
 //get a SINGLE author by ID
-router.get('/belt_test_models/:id', function (req, res) {
+router.get('/restaurants/:id', function (req, res) {
+    console.log(`reached individual restaurant lookup`,);
     let errs = new errorObject();
     console.log(`req.body: `,req.body);
-    let belt_test_model_id = req.params.id;
-    console.log(`reached individual belt_test_model lookup`,);
+    let restaurant_id = req.params.id;
     // res.json({'message':'working on it!'});
-    //get the belt_test_model
+    //get the restaurant
     var beltPromise = new Promise(function (resolve, reject) {
-        resolve(BeltTestModels.find({_id: req.params.id}));
+        resolve(RestaurantModels.find({_id: req.params.id}));
     })
-        .then(function (belt_test_model) {
-            res.json({'message': 'successfully retrieved the belt_test_model', 'belt_test_model': belt_test_model});
+        .then(function (restaurant) {
+            res.json({'message': 'successfully retrieved the restaurant', 'restaurant': restaurant});
         })
         .catch(function (err) {
             console.log(`caught err`, err);
             errs.has_errors = true;
-            errs.err_list.push(err.message);
-            res.json({'message':'There was a problem with the request', 'err':err.message, 'errs':errs})
+            errs.error_list.push(err.message);
+            res.json({'message':'There was a problem with the request', 'errs':errs})
         });
-
 });
 
 
 
-
-
-
-//DONE: router.post('/belt_test_models', function(req, res){}
 //FIXME: backside validation errors - standardize the way they are sent back to the front
-//create a belt_test_model
-router.post('/belt_test_models', function (req, res) {
+//create a restaurant
+router.post('/restaurants', function (req, res) {
     let errs = new errorObject();
     let err_holder = [];
     //new data recieved
     console.log(`request.body: `,req.body);
 
-    console.log(`   recieved request to make new belt_test_model`,);
-    let belt_test_model = new BeltTestModel();
+    console.log(`recieved request to make new restaurant`,);
 
-    if (req.body.belt_test_model_name.length < 3) {
+    let restaurant = new RestaurantModel();
+    console.log(`initiated model`,);
+
+    if (req.body.restaurant_name.length < 3) {
         errs.has_errors = true;
-        errs.err_list.push("name must be at least 3 characters");
+        errs.error_list.push("name must be at least 3 characters");
     }
-    if (req.body.type.length < 3){
+    if (req.body.cuisine_type.length < 3){
         errs.has_errors = true;
-        errs.err_list.push("type must be at least 3 characters");
+        errs.error_list.push("type must be at least 3 characters");
     }
     if (req.body.description.length < 3){
         errs.has_errors = true;
-        errs.err_list.push("description must be at least 3 characters");
+        errs.error_list.push("description must be at least 3 characters");
     }
 
-    belt_test_model.belt_test_model_name = req.body.belt_test_model_name;;
-    belt_test_model.type = req.body.type;
-    belt_test_model.description = req.body.description;
+    if (errs.has_errors) {
+        res.json({"message": "validation errors encountered when trying to save new restaurant", "errs": errs});
+    } else {
+        restaurant.restaurant_name = req.body.restaurant_name;
+        restaurant.cuisine_type = req.body.cuisine_type;
+        restaurant.description = req.body.description;
 
-    let new_skills = req.body.skills;
-    console.log(`New skills`,new_skills);
-    console.log(`New skills length: `,new_skills.length);
-    // res.json({'message': 'Working on it'})
+        restaurant.save(function (err) {
+            if (err) {
+                // console.log(`there was an error saving to db`, err);
+                errs.has_errors = true;
+                errs.error_list.push(err.message);
+                console.log(`there were errors saving to db`, err.message );
+                res.json({'message': 'unable to save new restaurant', 'errs': errs})
 
-    console.log(`BeltTestModel new_skills recieved:`,new_skills);
-    for(let i = 0; i < new_skills.length; i++){
-        if(new_skills[i] === null){
-            continue;
-        }
-        if (new_skills[i] && new_skills[i].length < 3) {
-            errs.has_errors = true;
-            errs.err_list.push('new_skills must be at least 3 characters');
-            break;
-        }
-        belt_test_model.skills.push({skill: new_skills[i]});
-        var subdoc = belt_test_model.skills[i];
-        console.log(`SKILL SUBDOC: `,subdoc);
+            } else {
+                console.log(`successfully saved!`);
+                res.json({'message': 'Saved new restaurant!', 'errs': errs})
+            }
+        });
 
     }
-
-    belt_test_model.save(function (err) {
-        if (err) {
-            // console.log(`there was an error saving to db`, err);
-            errs.has_errors = true;
-            errs.err_list.push(err.message);
-            console.log(`there were errors saving to db`, err.message );
-            res.json({'message': 'unable to save new belt_test_model', 'errs': errs})
-
-        } else {
-            console.log(`successfully saved!`);
-            res.json({'message': 'Saved new belt_test_model!', 'errs': errs})
-        }
-    });
 
 });
 
 
-//TODO : function for liking belt_test_model
 
-router.put('/belt_test_models/like/:id', function (req, res) {
-    console.log(`like request: `, req.params._id);
+//TODO: function for adding a review on a restaurant
+router.put('/reviews/:id', function (req, res) {
+    console.log(`request to add new review to restaurant ${req.params.id }`,);
+    console.log(`BODY: `,req.body);
+
+    let errs = new errorObject();
+    let err_holder = [];
+
+    //VALIDATION FOR REVIEWS
+    if (req.body.stars < 1 || req.body.stars > 5) {
+        errs.has_errors = true;
+        errs.error_list.push("Stars may only be between 1 and 5");
+    }
+    if (req.body.review_text.length < 3) {
+        errs.has_errors = true;
+        errs.error_list.push("Reviews must be at least 3 characters long");
+    }
+    if (req.body.user_name.length < 3) {
+        errs.has_errors = true;
+        errs.error_list.push("User name must be at least 3 characters long");
+    }
 
 
-    BeltTestModels.findOneAndUpdate(
-        { _id: req.params.id },
-        {$inc: {likes: 1}}).exec(function(err, belt_test_model_data) {
-        if (err) {
-            throw err;
-        }
-        else {
-            console.log(belt_test_model_data);
-            res.json({'message': 'did the likes', 'belt_test_model':belt_test_model_data})
-        }
-    })
+    if (errs.has_errors) {
+        res.json({"message":"there were errors adding the review", "errs": errs});
+
+    }
+    else {
+
+        //TODO: Find restaurant
+        let current_restaurant;
+        RestaurantModel.find({_id: req.params.id}).exec(function (err, restaurant) {
+            if (err) {
+                console.log(`there was an error finding the restaurant`, err);
+            } else {
+                console.log(`found restaurant`, restaurant);
+                current_restaurant = restaurant;
+
+            }
+            console.log(`CURRENT REST:`, current_restaurant);
+        });
+
+        var opts = {runValidators: true, context: 'query'};
+        RestaurantModel.findOneAndUpdate({_id: req.params.id}, {
+                $push: {
+                    reviews: {
+                        user_name: req.body.user_name,
+                        review_text: req.body.review_text,
+                        stars: req.body.stars
+                    }
+                }
+            },
+            opts,
+            function (err, restaurant) {
+                if (err) {
+                    console.log(`errors trying to add review`, err);
+                    errs.has_errors = true;
+                    errs.error_list.push(err.message);
+                    res.json({"message": "error while trying to add review", 'restaurant': restaurant, 'errs': errs});
+
+                } else {
+                    res.json({"message": "Successfully added review!", 'restaurant': restaurant, 'errs': errs});
+
+                }
+            });
+    }
+
 });
+
 
 
 
 //FIXME: standardize sending back errors
-//update an author's name
-router.put('/belt_test_models/:id', function (req, res) {
+//update an restaurant's name
+router.put('/restaurants/:id', function (req, res) {
     let errs = new errorObject();
     let err_holder = [];
     console.log(`ID: `,req.params.id);
-    console.log(`reached belt_test_model updater. Body: `, req.body);
+    console.log(`reached restaurant updater. Body: `, req.body);
 
 
     var opts = {runValidators: true , context: 'query'};
-    BeltTestModels.findOneAndUpdate({_id: req.params.id}, {
-        belt_test_model_name: req.body.belt_test_model_name,
-        type: req.body.type,
+    RestaurantModels.findOneAndUpdate({_id: req.params.id}, {
+        restaurant_name: req.body.restaurant_name,
+        cuisine_type: req.body.cuisine_type,
         description: req.body.description,
-        // "$set": {
-        //     "skills.0": req.body.skills[0],
-        // }
-        // skills: [req.body.skills[0], req.body.skills[1], req.body.skills[2]],
     }, opts, function (err) {
         if (err) {
             console.log(`there was an error updating`, err.message);
             errs.has_errors = true;
-            errs.err_list.push(err.message);
-            res.json({'message': 'problem updating belt_test_model', 'errs': errs});
+            errs.error_list.push(err.message);
+            res.json({'message': 'problem updating restaurant', 'errs': errs});
 
         } else {
-            res.json({'message': 'successfully updated belt_test_model', 'errs': errs});
-
+            res.json({'message': 'successfully updated restaurant', 'errs': errs});
         }
     });
-
 });
 
 
 
 //FIXME: ADD quote to selected author
-router.put('/add_belt_test_model/:belt_test_model_id', function (req, res) {
-    console.log(`got request to update author's quotes auth: `,req.params.belt_test_model_id);
+router.put('/add_belt_test_model/:restaurant_id', function (req, res) {
+    console.log(`got request to update author's quotes auth: `,req.params.restaurant_id);
     let errors = [];
-    let belt_test_model_id = req.params.belt_test_model_id;
+    let restaurant_id = req.params.restaurant_id;
     let text_to_add_as_quote = req.body.quote_text;
 
     //validate quote length
@@ -204,10 +230,10 @@ router.put('/add_belt_test_model/:belt_test_model_id', function (req, res) {
         console.log(`you done messed up`,);
         let err = new Error("quote is not long enough");
         errors.push(err.message);
-        res.json({'message':'done with the thing', 'author':belt_test_model_id, 'errors': errors});
+        res.json({'message':'done with the thing', 'author':restaurant_id, 'errors': errors});
 
     } else {
-        BeltTestModels.find({_id: belt_test_model_id}, function (err, author) {
+        RestaurantModels.find({_id: restaurant_id}, function (err, author) {
             if (err) {
                 errors.push(err.message);
                 res.json({"message":"error adding quote", "errors":errors})
@@ -216,37 +242,32 @@ router.put('/add_belt_test_model/:belt_test_model_id', function (req, res) {
                 console.log(`got the author, continue to ADD a quote:`,author);
                 author[0].quotes.push({ quote_text: text_to_add_as_quote });
                 author[0].save();
-                res.json({'message':'Successfully saved', 'author':belt_test_model_id});
+                res.json({'message':'Successfully saved', 'author':restaurant_id});
             }
         });
     }
 });
 
+
+
 //TODO: router.delete('/', function(req, res){}
-router.delete('/belt_test_models/:id', function (req, res) {
+router.delete('/restaurants/:id', function (req, res) {
     let errs = new errorObject();
     let err_holder = [];
 
-    console.log(`trying to delete...or adopt...the belt_test_model`,);
-    let belt_test_model_id = req.params.id;
+    console.log(`trying to delete the restaurant`,);
+    let restaurant_id = req.params.id;
 
-    console.log(`belt_test_model: ${belt_test_model_id}`);
-    BeltTestModels.remove({_id: req.params.id}, function (err) {
+    console.log(`restaurant: ${restaurant_id}`);
+    RestaurantModels.remove({_id: req.params.id}, function (err) {
         if (err) {
             errs.has_errors = true;
-            errs.err_list.push(err);
-            res.json({'message': 'Error when deleting belt_test_model', 'errs': errs});
-
+            errs.error_list.push(err);
+            res.json({'message': 'Error when deleting restaurant', 'errs': errs});
         } else {
-            res.json({'message': 'successfully deleted belt_test_model', 'errs': errs});
-
+            res.json({'message': 'successfully deleted restaurant', 'errs': errs});
         }
-
     });
-
-    // res.json({'message': 'trying to remove belt_test_model', 'belt_test_model_id': belt_test_model_id});
-
-
 });
 
 router.all("/*", (req,res,next) => {
@@ -255,9 +276,30 @@ router.all("/*", (req,res,next) => {
 });
 
 
+//TODO : function for liking restaurant
+router.put('/restaurants/like/:id', function (req, res) {
+    console.log(`like request: `, req.params.id);
+
+    RestaurantModels.findOneAndUpdate(
+        { _id: req.params.id },
+        {$inc: {likes: 1}}).exec(function(err, belt_test_model_data) {
+        if (err) {
+            throw err;
+        }
+        else {
+            console.log(belt_test_model_data);
+            res.json({'message': 'did the likes', 'restaurant':belt_test_model_data})
+        }
+    })
+});
+
+
+
+
+
 
 function update_by_quote_sub_id(){
-    BeltTestModels.findOne({'quote._id': quoteId}).then(author => {
+    RestaurantModels.findOne({'quote._id': quoteId}).then(author => {
         let quote = author.quote.id(quoteId);
         quote.votes = 'something';
         return author.save();
@@ -274,13 +316,13 @@ function update_by_quote_sub_id(){
 var createSampleBeltTestModel = function () {
     let errs = new errorObject();
     let err_holder = [];
-    console.log(`trying to make a sample BeltTestModel`,);
-    var BeltTestModelInstance = new BeltTestModel();
-    // BeltTestModelInstance.belt_test_model_name = 'Barney';
+    console.log(`trying to make a sample RestaurantModel`,);
+    var BeltTestModelInstance = new RestaurantModel();
+    // BeltTestModelInstance.restaurant_name = 'Barney';
     // BeltTestModelInstance.type = 'cat';
     // BeltTestModelInstance.description = 'fat cat in Washington';
     // BeltTestModelInstance.skills = ['bird watching', 'killing','littering', 'something_else'];
-    BeltTestModelInstance.belt_test_model_name = 'Blake';
+    BeltTestModelInstance.restaurant_name = 'Blake';
     BeltTestModelInstance.type = 'Dog';
     BeltTestModelInstance.description = 'Likes lasagna';
     BeltTestModelInstance.skills.push({skill: 'pooping'});
@@ -291,7 +333,7 @@ var createSampleBeltTestModel = function () {
         if (err) {
             // console.log(`there was an error saving to db`, err);
             errs.has_errors = true;
-            errs.err_list.push(err.message);
+            errs.error_list.push(err.message);
             console.log(`there were errors saving to db`, err.message );
         } else {
             console.log(`successfully saved!`);

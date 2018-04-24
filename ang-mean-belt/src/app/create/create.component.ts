@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Router, ActivatedRoute} from "@angular/router";
 import {DataManagerService} from "../data-manager.service";
+import {RestaurantModel} from "../data-manager.service";
 
 
 @Component({
@@ -35,17 +36,9 @@ export class CreateComponent implements OnInit {
   // };
 
   new_thing: any;
+  new_restaurant = new RestaurantModel();
 
   ngOnInit() {
-  //set the values for a new thing
-    this.new_thing = {
-      name: '',
-      details: '',
-      attribute_one: '',
-      attribute_two: '',
-      attribute_three: '',
-      skills: [this.skill_one, this.skill_two, this.skill_three]
-    };
 
   }
 
@@ -57,16 +50,46 @@ export class CreateComponent implements OnInit {
 
   validateForm() {
     console.log(`checking form for valid inputs`,);
-    if (this.new_thing.name.length &&
-      this.new_thing.description.length &&
-      this.new_thing.type.length) {
+    if (this.new_restaurant.restaurant_name.length < 3 ||
+      this.new_restaurant.description.length < 3 ||
+      this.new_restaurant.cuisine_type.length < 3) {
+      console.log(`name`,this.new_restaurant.restaurant_name.length);
+      console.log(`desc`,this.new_restaurant.description.length);
+      console.log(`cuisine`,this.new_restaurant.cuisine_type.length);
+
       console.log(`invalid form data`,);
       return true;
     } else {
-      console.log(`valid form data`,);
+      console.log(`enough data to send`,);
       return false;
     }
+  }
 
+  navHome() {
+    this.router.navigateByUrl('/home');
+  }
+
+  createNewRestaurant() {
+    this.backend_errors = null;
+    let router = this.router;
+
+    console.log(`trying to create new restaurant`,);
+    if (!this.validateForm()) {
+      let observable = this._http.createRestaurant(this.new_restaurant);
+      observable.subscribe(response => {
+        console.log(`response from server for create restaurant: `, response);
+        if (!response['errs'].has_errors) {
+          router.navigateByUrl('/home');
+        } else if (response['errs'].has_errors) {
+          this.backend_errors = response['errs'].error_list;
+          console.log(``,this.backend_errors);
+        }
+      });
+      //this means it's valid
+    } else {
+      //this means something was wrong with the form
+      alert('you must complete the form before you can submit it')
+    }
   }
 
 }

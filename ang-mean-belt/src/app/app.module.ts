@@ -12,6 +12,7 @@ import { HomeComponent } from './home/home.component';
 import { CreateComponent } from './create/create.component';
 import { EditComponent } from './edit/edit.component';
 import { DetailsComponent } from './details/details.component';
+import { ReviewsComponent } from './reviews/reviews.component';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import { DetailsComponent } from './details/details.component';
     HomeComponent,
     CreateComponent,
     EditComponent,
-    DetailsComponent
+    DetailsComponent,
+    ReviewsComponent
   ],
   imports: [
     BrowserModule,

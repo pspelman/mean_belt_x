@@ -5,13 +5,15 @@ import {HomeComponent} from "./home/home.component";
 import {DetailsComponent} from "./details/details.component";
 import {CreateComponent} from "./create/create.component";
 import {EditComponent} from "./edit/edit.component";
+import {ReviewsComponent} from "./reviews/reviews.component";
 
 const routes: Routes = [
   {path: 'edit', component: EditComponent},
-  {path: 'edit/:belt_test_model_id', component: EditComponent},
+  {path: 'edit/:restaurant_id', component: EditComponent},
+  {path: 'reviews/:restaurant_id', component: ReviewsComponent},
   {path: 'create', component: CreateComponent},
   {path: 'details', component: DetailsComponent },
-  {path: 'details/:belt_test_model_id', component: DetailsComponent },
+  {path: 'details/:restaurant_id', component: DetailsComponent },
   {path: 'home', component: HomeComponent},
   {path: '', component: HomeComponent }
 
